@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		ME0cAg6cl/bTZmwXEVgMugDccUI=
+		WRO5/U6PQojZlV+neb0aYo1W/wA=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		oG5/OGn+vw7vp/nu5DUDoZJ4nFc=
+		D1cAY+QQInDsPkSbi8EK8WmTnUw=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,11 +22,51 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		hRXFP4GTsKYPfz29Qs8+Q0WUt1U=
+		tbs8u8ARAz7V6bv1RyPpA9c/dTs=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
 		re4p7E8rPLLsN+wzaPN/+AVpXTY=
+		</data>
+		<key>flutter_assets/assets/icons/aries.png</key>
+		<data>
+		DJ48/PgyKB77GHJZV+6BXJ5gdXQ=
+		</data>
+		<key>flutter_assets/assets/icons/cancer.png</key>
+		<data>
+		tjcc6T87DNXqr06iCVAZ2a79l7A=
+		</data>
+		<key>flutter_assets/assets/icons/capricorn.png</key>
+		<data>
+		qrYuj4RLNDC3wn+DTkosbLXp9zA=
+		</data>
+		<key>flutter_assets/assets/icons/gemini.png</key>
+		<data>
+		yZ4594XE7ERs0S9mwxLULcl6m8Y=
+		</data>
+		<key>flutter_assets/assets/icons/leo.png</key>
+		<data>
+		j07vyS3OlN22Nfocm05ZPYLh1cY=
+		</data>
+		<key>flutter_assets/assets/icons/libra.png</key>
+		<data>
+		cu2dUKBMjJXAQTg6AaiJvAks9hM=
+		</data>
+		<key>flutter_assets/assets/icons/pisces.png</key>
+		<data>
+		2Z7uahm0CxQlFUbgCNXxwyVDfmk=
+		</data>
+		<key>flutter_assets/assets/icons/sagittarius.png</key>
+		<data>
+		JBHKINKGvJxqJpxQBuO8wDTW6P0=
+		</data>
+		<key>flutter_assets/assets/icons/scorpio.png</key>
+		<data>
+		C/TrASQvfi5K0dRXfixzV1PUdAA=
+		</data>
+		<key>flutter_assets/assets/icons/virgo.png</key>
+		<data>
+		IqEkGuVk2rawjgqqlZXlxpC4s6U=
 		</data>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
@@ -34,11 +74,11 @@
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		hG1AhqbC8iHjSxAH427tvh3Vl0w=
+		gRDbYzMNgtJeT9rLZDdiOJ0RXMg=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		inMLy2Arf3iUsYgstBPLx2OFpvs=
+		DMI+ETUqigTOVMqFtIrccXEjlEo=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -59,14 +99,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			AK9VrT1vIYmP534P8JLRoc2lLJQbaGDpko1FyK+MCV0=
+			n9HYuCfUIwJt4S3SzwsHp0w90/yhjkbdYSReGhEpT+Q=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Sps95+7JukayebvM0TLjL1LW1VXXndpKp/O8tOm9ZR8=
+			U2Ke+gBxIrglZ2H5gQQKfR9rWQs2+YlGqAmD1rRNYVs=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -80,7 +120,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			rJbeB7XU9G/d1GPh8T4PdeGUN3YzNDbwZhyWKmbz3DI=
+			2q/iINNWZwHNIsmluujAqwQFRuiCqyY5sOnqvnIDviA=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -88,6 +128,76 @@
 			<key>hash2</key>
 			<data>
 			lUijHkoEgTXB2U+Rkyi/tirix7s8q5ZVfHlB2ql3dss=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/aries.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			VQoChyTFR/qYZHzFDN2hINVBTJ1tHtX2gXzGD5zRsmg=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/cancer.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			KnaNdJNXwVMiMBUihh4HyIzolS8QFIbypiYJ9ioeX5k=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/capricorn.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			J5QSIoLbmKGodndhnoNbhIJ/Ldi5hCxsDTKhKKD+ZnM=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/gemini.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			E8hTZieZ+hDpGbKH1n4cxEizG38yNqHRulYcqobCeh4=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/leo.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zedkiDFmK5JFh2M2L5zxcgMGnEFY2hPdIj5wiRdKaAc=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/libra.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			fUUHx7Hz0+FlIb/Yk86i9C7ag/FTyV7A99bWtfPMJ/g=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/pisces.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			9WykpqDrSXfxFw1HoKA4HGBvzRUllmUzaJi8UW221eQ=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/sagittarius.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zByMDyyr4dE80fkDKUeK7WkxSb7EYIvIwDPzm/EH+Ok=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/scorpio.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			o8/SIj95uC8gwTuswqIctZEatp3PvfzVeukD9Pw2MaQ=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/icons/virgo.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Bx7D7b82V5YwMi8n/6dGNAdA1ZlMSOGQAgG8G1v7Lh4=
 			</data>
 		</dict>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
@@ -101,14 +211,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Nr1mzMiVCo7jNK4MrbpDXD2XCmGqGE5b02O1LF4koqc=
+			Ut/uEhc6+hUf6S/IpyxQydpXSJV0AmyYEkKu13s4D6o=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			DvBQaeWI8i80zFQUdSBB4yBMYibezQmY/ea+jfKDcrc=
+			vi1/puIYx0sgCGbHK74ICc6fNlRGyM2d1czmzUpDR6w=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

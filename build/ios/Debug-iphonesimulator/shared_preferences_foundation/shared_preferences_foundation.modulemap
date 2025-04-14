@@ -7,6 +7,6 @@ module shared_preferences_foundation {
 
 
 module shared_preferences_foundation.Swift {
-  header "/Users/lbroecking/VSCode/couple_journal/build/ios/Debug-iphonesimulator/shared_preferences_foundation/Swift Compatibility Header/shared_preferences_foundation-Swift.h"
+  header "/Users/lbroecking/VSCode/journal-flutter/build/ios/Debug-iphonesimulator/shared_preferences_foundation/Swift Compatibility Header/shared_preferences_foundation-Swift.h"
   requires objc
 }

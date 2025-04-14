@@ -7,6 +7,6 @@ module app_links {
 
 
 module app_links.Swift {
-  header "/Users/lbroecking/VSCode/couple_journal/build/ios/Debug-iphonesimulator/app_links/Swift Compatibility Header/app_links-Swift.h"
+  header "/Users/lbroecking/VSCode/journal-flutter/build/ios/Debug-iphonesimulator/app_links/Swift Compatibility Header/app_links-Swift.h"
   requires objc
 }

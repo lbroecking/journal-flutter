@@ -17,10 +17,14 @@ class _NewEntryPageState extends State<NewEntryPage> {
   final _proudController = TextEditingController();
 
   String _selectedEmotion = 'neutral';
+  String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  String formattedDateGer = DateFormat(
+      'dd.MM.yyyy',
+    ).format(DateTime.now()); 
 
   Future<void> _addEntry() async {
     final user = supabase.auth.currentUser;
-    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
     if (user != null && _proudController.text.isNotEmpty) {
       await supabase.from('journal_entries').insert({
         'user_id': user.id,
@@ -39,7 +43,7 @@ class _NewEntryPageState extends State<NewEntryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("New Entry")),
+      appBar: AppBar(title: Text("New Entry - ${formattedDateGer}")),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -47,7 +51,9 @@ class _NewEntryPageState extends State<NewEntryPage> {
           children: [
             TextField(
               controller: _contentController,
-              decoration: InputDecoration(labelText: "Write your day today..."),
+              decoration: InputDecoration(
+                labelText: "Write about your day today...",
+              ),
               maxLines: 5,
             ),
             SizedBox(height: 10),

@@ -5,6 +5,7 @@ import 'new_personal_entry.dart';
 import 'new_relationship_entry.dart';
 import 'utils/emotion_colors.dart';
 import 'package:intl/intl.dart';
+import 'new_moon_entry.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -51,6 +52,11 @@ class _JournalPageState extends State<JournalPage> {
               'id, content, content_grateful, content_proud, emotion_color, created_at, profiles(username)';
           break;
         case 1:
+          table = 'moon_entries';
+          selectFields =
+              'id, let_go, want, created_at, moon_sign, profiles(username)';
+          break;
+        case 2:
           table = 'relationship_check';
           selectFields = 'id, question, answer, created_at, profiles(username)';
           break;
@@ -71,15 +77,32 @@ class _JournalPageState extends State<JournalPage> {
     }
   }
 
-Future<void> _deleteEntry(Map<String, dynamic> entry) async {
-  final supabase = Supabase.instance.client;
+  Future<void> _deleteEntry(Map<String, dynamic> entry) async {
+    final supabase = Supabase.instance.client;
+    String table = '';
 
-  final response = await supabase
-      .from('journal_entries') // deine Tabelle
-      .delete()
-      .eq('id', entry['id']);
+    switch (selectedIndex) {
+      case 0:
+        table = 'journal_entries';
+        break;
+      case 1:
+        table = 'moon_entries';
+        break;
+      case 2:
+        table = 'relationship_check';
+        break;
+      default:
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error")));
+    }
 
- if (response != null) {
+    final response = await supabase
+        .from(table) // deine Tabelle
+        .delete()
+        .eq('id', entry['id']);
+
+    if (response != null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error")));
@@ -89,28 +112,7 @@ Future<void> _deleteEntry(Map<String, dynamic> entry) async {
       ).showSnackBar(SnackBar(content: Text("Deleted Entry!")));
       _fetchEntries();
     }
-}
-
-Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
-  final supabase = Supabase.instance.client;
-
-  final response = await supabase
-      .from('relationship_check') // deine Tabelle
-      .delete()
-      .eq('id', entry['id']);
-
- if (response != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error")));
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Deleted Entry!")));
-      _fetchEntries();
-    }
-}
-
+  }
 
   Future<void> _updateEntry(
     int entryId,
@@ -143,13 +145,38 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
     }
   }
 
-  Future<void> _updateRelEntry(int entryId, String newContent) async {
+  Future<void> _updateMoonEntry(
+    int entryId,
+    String newLetGo,
+    String newWantList,
+    String newSign,
+  ) async {
+    final supabase = Supabase.instance.client;
+
+    final response = await supabase
+        .from('moon_entries')
+        .update({'let_go': newLetGo, 'want': newWantList, 'moon_sign': newSign})
+        .eq('id', entryId);
+
+    if (response != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Updated Entry!")));
+      _fetchEntries();
+    }
+  }
+
+  Future<void> _updateRelEntry(int entryId, String newAnswer) async {
     final supabase = Supabase.instance.client;
 
     final response = await supabase
         .from('relationship_check')
         .update({
-          'answer': newContent, // Neuen Antwort speichern
+          'answer': newAnswer, // Neuen Antwort speichern
         })
         .eq('id', entryId); // Eintrag nach ID aktualisieren
 
@@ -189,7 +216,7 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
               TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  labelText: "Write your day today...",
+                  labelText: "Write about your day today...",
                 ),
                 maxLines: 5,
               ),
@@ -273,6 +300,79 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
     );
   }
 
+  String _formatDate(String dateStr) {
+    // DateTime aus dem String erstellen
+    DateTime date = DateTime.parse(dateStr);
+
+    // Monat und Jahr formatieren
+    String formattedDate = DateFormat(
+      'MMMM yyyy',
+    ).format(date); // Beispiel: "April 2025"
+
+    return formattedDate;
+  }
+
+String _formatDateGer(String dateStr) {
+    // DateTime aus dem String erstellen
+    DateTime date = DateTime.parse(dateStr);
+
+    // Monat und Jahr formatieren
+    String formattedDate = DateFormat(
+      'dd.MM.yyyy',
+    ).format(date); // Beispiel: "April 2025"
+
+    return formattedDate;
+  }
+
+
+  void _editMoonEntry(BuildContext context, Map<String, dynamic> entry) {
+    List<dynamic> jsonList =
+        entry['want'].map((item) => item.toString()).toList();
+
+    TextEditingController wantController = TextEditingController(
+      text: jsonList.join('\n'),
+      //entry['want'].map<Widget>((item) => Text("- ${item.toString()}")),
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit Entry"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(entry['moon_sign']),
+              SizedBox(height: 10),
+              // Textfeld für den Inhalt des Eintrags
+              TextField(
+                controller: wantController,
+                decoration: InputDecoration(labelText: "Update your answer"),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+          actions: [
+            // "Cancel"-Button
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            // "Save"-Button
+            TextButton(
+              onPressed: () async {
+                // Update in Supabase mit neuem Inhalt und Emotion
+                await _updateRelEntry(entry['id'], wantController.text);
+                Navigator.pop(context); // Dialog schließen
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _editRelEntry(BuildContext context, Map<String, dynamic> entry) {
     TextEditingController controller = TextEditingController(
       text: entry['answer'],
@@ -340,6 +440,7 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Personal'),
+          BottomNavigationBarItem(icon: Icon(Icons.mode_night), label: 'Moon'),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Relationship',
@@ -352,11 +453,22 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) =>
-                      selectedIndex == 0
-                          ? NewEntryPage() // Wenn "journal_entries" aktiv
-                          : NewRelationshipEntryPage(), // Wenn "relationship_check" aktiv
+              builder: (context) {
+                switch (selectedIndex) {
+                  case 0:
+                    return NewEntryPage();
+                  case 1:
+                    return NewMoonPage();
+                  case 2:
+                    return NewRelationshipEntryPage();
+                  default:
+                    return Scaffold(
+                      body: Center(
+                        child: Text('Unknown Index: $selectedIndex'),
+                      ),
+                    );
+                }
+              },
             ),
           );
           _fetchEntries(); // Reload der Einträge
@@ -383,8 +495,46 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
             // Titel + Zusatzinfos
             final title =
                 selectedIndex == 0
-                    ? entry['content'] ?? ''
-                    : entry['question'] ?? 'Kein Status';
+                    ? Column(
+                      children: [
+                        if (entry['created_at'] != null)
+                          Text(
+                            "${_formatDateGer(entry['created_at'])}",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                      ],
+                    )
+                    : selectedIndex == 1
+                    ? Column(
+                      children: [
+                        if (entry['moon_sign'] != null)
+                          Row(
+                            children: [
+                              Text(
+                                "${entry['moon_sign']} - ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                entry['created_at'] != null
+                                    ? _formatDate(entry['created_at'])
+                                    : "No date", // Falls kein Datum vorhanden ist
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                      ],
+                    )
+                    : selectedIndex == 2
+                    ? Column(
+                      children: [
+                        if (entry['question'] != null)
+                          Text(
+                            "${entry['question']}",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                      ],
+                    )
+                    : Container(); // Fallback für unerwartete `selectedIndex` Werte
 
             // Zusätzliche Daten je nach Tab:
             final additionalContent =
@@ -392,20 +542,73 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
                     ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (entry['content'] != null &&
+                            entry['content'].toString().isNotEmpty)
+                          Text("${entry['content']}", style: TextStyle(fontSize: 18)),
+                        SizedBox(height: 10),
                         if (entry['content_grateful'] != null &&
                             entry['content_grateful'].toString().isNotEmpty)
-                          Text("Grateful: ${entry['content_grateful']}"),
+                          Text("Grateful: ${entry['content_grateful']}", style: TextStyle(fontSize: 18)),
                         if (entry['content_proud'] != null &&
                             entry['content_proud'].toString().isNotEmpty)
-                          Text("Proud: ${entry['content_proud']}"),
+                          Text("Proud: ${entry['content_proud']}", style: TextStyle(fontSize: 18)),
                       ],
                     )
-                    : Column(
+                    : selectedIndex == 1
+                    ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (entry['answer'] != null) Text("${entry['answer']}"),
+                        // Let Go List als JSON-Liste anzeigen
+                        if (entry['let_go'] != null &&
+                            entry['let_go'] is List &&
+                            entry['let_go'].isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Your Let Go List:", style: TextStyle(fontSize: 19)),
+                              SizedBox(height: 5),
+                              ...List<Widget>.from(
+                                entry['let_go'].map<Widget>(
+                                  (item) => Text("- ${item.toString()}", style: TextStyle(fontSize: 18)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        SizedBox(height: 10),
+
+                        // Want List als JSON-Liste anzeigen
+                        if (entry['want'] != null &&
+                            entry['want'] is List &&
+                            entry['want'].isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Your Want List:", style: TextStyle(fontSize: 19)),
+                              SizedBox(height: 5),
+                              ...List<Widget>.from(
+                                entry['want'].map<Widget>(
+                                  (item) => Text("- ${item.toString()}", style: TextStyle(fontSize: 18)),
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
-                    );
+                    )
+                    : selectedIndex == 2
+                    ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (entry['answer'] != null) Text("${entry['answer']}", style: TextStyle(fontSize: 18),),
+                        SizedBox(height: 8),
+                        if (entry['created_at'] != null)
+                          Text(
+                            DateFormat(
+                              'dd.MM.yyyy',
+                            ).format(DateTime.parse(entry['created_at'])),
+                          ),
+                      ],
+                    )
+                    : Container(); // Fallback für unerwartete `selectedIndex` Werte
 
             final subtitleWidgets = <Widget>[
               //Text(entry['profiles']['username'] ?? ''),
@@ -425,19 +628,19 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
               ),
               child: ListTile(
                 contentPadding: EdgeInsets.all(16),
-                title: Text(
-                  title,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [title],
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8),
+                    SizedBox(height: 10),
                     additionalContent,
-                    SizedBox(height: 8),
+                    //SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: subtitleWidgets,
+                      //children: subtitleWidgets,
                     ),
                   ],
                 ),
@@ -454,6 +657,8 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
                               Navigator.pop(context); // Modal schließen
                               if (selectedIndex == 0) {
                                 _editEntry(context, entry);
+                              } else if (selectedIndex == 1) {
+                                _editMoonEntry(context, entry);
                               } else {
                                 _editRelEntry(context, entry);
                               }
@@ -463,13 +668,8 @@ Future<void> _deleteRelEntry(Map<String, dynamic> entry) async {
                             leading: Icon(Icons.delete),
                             title: Text('Löschen'),
                             onTap: () {
-                              if (selectedIndex == 0) {
-                                _deleteEntry(entry);
-                              } else {
-                                _deleteRelEntry(entry);
-                              }
-                              
-                             
+                              _deleteEntry(entry);
+
                               Navigator.pop(context); // Modal schließen
                             },
                           ),

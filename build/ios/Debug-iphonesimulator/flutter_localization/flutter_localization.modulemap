@@ -1,0 +1,12 @@
+module flutter_localization {
+  umbrella header "flutter_localization-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+
+module flutter_localization.Swift {
+  header "/Users/lbroecking/VSCode/journal-flutter/build/ios/Debug-iphonesimulator/flutter_localization/Swift Compatibility Header/flutter_localization-Swift.h"
+  requires objc
+}

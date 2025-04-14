@@ -7,6 +7,6 @@ module GTMAppAuth {
 
 
 module GTMAppAuth.Swift {
-  header "/Users/lbroecking/VSCode/couple_journal/build/ios/Debug-iphonesimulator/GTMAppAuth/Swift Compatibility Header/GTMAppAuth-Swift.h"
+  header "/Users/lbroecking/VSCode/journal-flutter/build/ios/Debug-iphonesimulator/GTMAppAuth/Swift Compatibility Header/GTMAppAuth-Swift.h"
   requires objc
 }
