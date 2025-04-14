@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
+import 'utils/rel_questions.dart';
 
 class NewRelationshipEntryPage extends StatefulWidget {
   const NewRelationshipEntryPage({super.key});
@@ -15,14 +16,7 @@ class _NewRelationshipEntryPageState extends State<NewRelationshipEntryPage> {
   final Map<String, bool> selected = {};
   final Map<String, TextEditingController> controllers = {};
 
-  final List<String> questions = [
-    "What was our most beautiful moment this week?",
-    "How do I feel in this relationship?",
-    "What do I wish for?",
-    "Today I thought of you when...",
-    "Something I loved about you this week.",
-    "A small thing I missed.",
-  ];
+ 
 
   @override
   void initState() {

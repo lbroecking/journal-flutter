@@ -1,6 +1,4 @@
-# couple_journal
-
-My Journal Project
+# My Journal Project
 
 ## About
 
