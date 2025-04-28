@@ -499,7 +499,7 @@ String _formatDateGer(String dateStr) {
                       children: [
                         if (entry['created_at'] != null)
                           Text(
-                            "${_formatDateGer(entry['created_at'])}",
+                            _formatDateGer(entry['created_at']),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                       ],

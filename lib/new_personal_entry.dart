@@ -43,7 +43,7 @@ class _NewEntryPageState extends State<NewEntryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("New Entry - ${formattedDateGer}")),
+      appBar: AppBar(title: Text("New Entry - $formattedDateGer")),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(

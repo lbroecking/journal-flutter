@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'journal_page.dart';
 
 class AuthPage extends StatefulWidget {
@@ -13,46 +14,62 @@ class _AuthPageState extends State<AuthPage> {
   final _userNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final supabase = Supabase.instance.client;
 
-  Future<void> signIn() async {
-    try {
-      await supabase.auth.signInWithPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+  Future<void> signUp() async {
+    final url = Uri.parse('http://localhost:3000/register'); // GO BACKEND URL
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': _userNameController.text,
+        'email': _emailController.text,
+        'password': _passwordController.text,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => JournalPage()),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Register successful; User: ${data['user']}")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to create user: ${response.body}")),
+      );
     }
   }
 
-  Future<void> signUp() async {
-    try {
-      await supabase.auth.signUp(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+Future<void> signIn() async {
+    final url = Uri.parse('http://localhost:3000/login'); // GO BACKEND URL
 
-      final user = supabase.auth.currentUser;
-      await supabase.from('profiles').insert({
-        'userid': user!.id,
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'username': _userNameController.text,
-        'avatar_url': null,
-      });
+        'email': _emailController.text,
+        'password': _passwordController.text,
+      }),
+    );
 
-      ScaffoldMessenger.of(
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      Navigator.pushReplacement(
         context,
-      ).showSnackBar(SnackBar(content: Text("Register successful")));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+        MaterialPageRoute(builder: (_) => JournalPage()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login successful; Session: ${data['session']}")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to login user: ${response.body}")),
+      );
     }
   }
 
