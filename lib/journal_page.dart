@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_page.dart';
 import 'new_personal_entry.dart';
 import 'new_relationship_entry.dart';
 import 'utils/emotion_colors.dart';
 import 'package:intl/intl.dart';
 import 'new_moon_entry.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -15,7 +16,7 @@ class JournalPage extends StatefulWidget {
 }
 
 class _JournalPageState extends State<JournalPage> {
-  final supabase = Supabase.instance.client;
+  //final supabase = Supabase.instance.client;
   String _selectedEmotion = 'neutral';
 
   List<Map<String, dynamic>> _entries = [];
@@ -29,56 +30,58 @@ class _JournalPageState extends State<JournalPage> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    await supabase.auth.signOut(); // Supabase Logout
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AuthPage(),
-      ), // Zur AuthPage navigieren
-    );
+    //TODO insert delete server request
+    final uri = Uri.parse('http://localhost:3000/logout');
+    final response = await http.post(uri);
+    if (response.statusCode == 200) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AuthPage(),
+        ), // Zur AuthPage navigieren
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to logout.")));
+    }
   }
 
   Future<void> _fetchEntries() async {
-    final user = supabase.auth.currentUser;
-    if (user != null) {
-      String table;
-      String selectFields;
+    //final userId = "dein_user_id"; // Hole User-ID anders! (z.B. via JWT)
+    final uri = Uri.parse('http://localhost:3000/entries?selected_index=$selectedIndex');
+    final response = await http.get(uri);
 
-      // Tabelle & Select-Query je nach Tab definieren
-      switch (selectedIndex) {
-        case 0:
-          table = 'journal_entries';
-          selectFields =
-              'id, content, content_grateful, content_proud, emotion_color, created_at, profiles(username)';
-          break;
-        case 1:
-          table = 'moon_entries';
-          selectFields =
-              'id, let_go, want, created_at, moon_sign, profiles(username)';
-          break;
-        case 2:
-          table = 'relationship_check';
-          selectFields = 'id, question, answer, created_at, profiles(username)';
-          break;
-        default:
-          table = 'journal_entries';
-          selectFields = '*';
-      }
+    /*
+    final uri = Uri.parse('http://localhost:3000/entries');
 
-      final response = await supabase
-          .from(table)
-          .select(selectFields)
-          .eq('user_id', user.id)
-          .order('created_at', ascending: false);
+    final Map<String, dynamic> body = {
+      //'user_id': userId,
+      'filter': selectedIndex,
+    };
 
+    final response = await http.get(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+    */
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
       setState(() {
-        _entries = List<Map<String, dynamic>>.from(response);
+        _entries = List<Map<String, dynamic>>.from(data);
       });
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to load entries")));
     }
   }
 
   Future<void> _deleteEntry(Map<String, dynamic> entry) async {
-    final supabase = Supabase.instance.client;
+    //TODO insert delete server request
+
     String table = '';
 
     switch (selectedIndex) {
@@ -96,30 +99,18 @@ class _JournalPageState extends State<JournalPage> {
           context,
         ).showSnackBar(SnackBar(content: Text("Error")));
     }
-
-    final response = await supabase
-        .from(table) // deine Tabelle
-        .delete()
-        .eq('id', entry['id']);
-
-    if (response != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error")));
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Deleted Entry!")));
-      _fetchEntries();
-    }
   }
 
+  /*
   Future<void> _updateEntry(
+    //todo updatet entry
+
     int entryId,
     String newContent,
     String newGrateful,
     String newProud,
     String emotion,
+
   ) async {
     final supabase = Supabase.instance.client;
 
@@ -143,7 +134,9 @@ class _JournalPageState extends State<JournalPage> {
       ).showSnackBar(SnackBar(content: Text("Updated Entry!")));
       _fetchEntries();
     }
+
   }
+
 
   Future<void> _updateMoonEntry(
     int entryId,
@@ -191,6 +184,7 @@ class _JournalPageState extends State<JournalPage> {
       _fetchEntries();
     }
   }
+  */
 
   void _editEntry(BuildContext context, Map<String, dynamic> entry) {
     TextEditingController controller = TextEditingController(
@@ -283,13 +277,13 @@ class _JournalPageState extends State<JournalPage> {
             TextButton(
               onPressed: () async {
                 // Update in Supabase mit neuem Inhalt und Emotion
-                await _updateEntry(
+                /*await _updateEntry(
                   entry['id'],
                   controller.text,
                   gratefulController.text,
                   proudController.text,
                   _selectedEmotion,
-                );
+                );*/
                 Navigator.pop(context); // Dialog schließen
               },
               child: Text("Save"),
@@ -312,7 +306,7 @@ class _JournalPageState extends State<JournalPage> {
     return formattedDate;
   }
 
-String _formatDateGer(String dateStr) {
+  String _formatDateGer(String dateStr) {
     // DateTime aus dem String erstellen
     DateTime date = DateTime.parse(dateStr);
 
@@ -323,7 +317,6 @@ String _formatDateGer(String dateStr) {
 
     return formattedDate;
   }
-
 
   void _editMoonEntry(BuildContext context, Map<String, dynamic> entry) {
     List<dynamic> jsonList =
@@ -362,7 +355,7 @@ String _formatDateGer(String dateStr) {
             TextButton(
               onPressed: () async {
                 // Update in Supabase mit neuem Inhalt und Emotion
-                await _updateRelEntry(entry['id'], wantController.text);
+                //await _updateRelEntry(entry['id'], wantController.text);
                 Navigator.pop(context); // Dialog schließen
               },
               child: Text("Save"),
@@ -406,7 +399,7 @@ String _formatDateGer(String dateStr) {
             TextButton(
               onPressed: () async {
                 // Update in Supabase mit neuem Inhalt und Emotion
-                await _updateRelEntry(entry['id'], controller.text);
+                //await _updateRelEntry(entry['id'], controller.text);
                 Navigator.pop(context); // Dialog schließen
               },
               child: Text("Save"),
@@ -544,14 +537,23 @@ String _formatDateGer(String dateStr) {
                       children: [
                         if (entry['content'] != null &&
                             entry['content'].toString().isNotEmpty)
-                          Text("${entry['content']}", style: TextStyle(fontSize: 18)),
+                          Text(
+                            "${entry['content']}",
+                            style: TextStyle(fontSize: 18),
+                          ),
                         SizedBox(height: 10),
                         if (entry['content_grateful'] != null &&
                             entry['content_grateful'].toString().isNotEmpty)
-                          Text("Grateful: ${entry['content_grateful']}", style: TextStyle(fontSize: 18)),
+                          Text(
+                            "Grateful: ${entry['content_grateful']}",
+                            style: TextStyle(fontSize: 18),
+                          ),
                         if (entry['content_proud'] != null &&
                             entry['content_proud'].toString().isNotEmpty)
-                          Text("Proud: ${entry['content_proud']}", style: TextStyle(fontSize: 18)),
+                          Text(
+                            "Proud: ${entry['content_proud']}",
+                            style: TextStyle(fontSize: 18),
+                          ),
                       ],
                     )
                     : selectedIndex == 1
@@ -565,11 +567,17 @@ String _formatDateGer(String dateStr) {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Your Let Go List:", style: TextStyle(fontSize: 19)),
+                              Text(
+                                "Your Let Go List:",
+                                style: TextStyle(fontSize: 19),
+                              ),
                               SizedBox(height: 5),
                               ...List<Widget>.from(
                                 entry['let_go'].map<Widget>(
-                                  (item) => Text("- ${item.toString()}", style: TextStyle(fontSize: 18)),
+                                  (item) => Text(
+                                    "- ${item.toString()}",
+                                    style: TextStyle(fontSize: 18),
+                                  ),
                                 ),
                               ),
                             ],
@@ -583,11 +591,17 @@ String _formatDateGer(String dateStr) {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Your Want List:", style: TextStyle(fontSize: 19)),
+                              Text(
+                                "Your Want List:",
+                                style: TextStyle(fontSize: 19),
+                              ),
                               SizedBox(height: 5),
                               ...List<Widget>.from(
                                 entry['want'].map<Widget>(
-                                  (item) => Text("- ${item.toString()}", style: TextStyle(fontSize: 18)),
+                                  (item) => Text(
+                                    "- ${item.toString()}",
+                                    style: TextStyle(fontSize: 18),
+                                  ),
                                 ),
                               ),
                             ],
@@ -598,7 +612,11 @@ String _formatDateGer(String dateStr) {
                     ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (entry['answer'] != null) Text("${entry['answer']}", style: TextStyle(fontSize: 18),),
+                        if (entry['answer'] != null)
+                          Text(
+                            "${entry['answer']}",
+                            style: TextStyle(fontSize: 18),
+                          ),
                         SizedBox(height: 8),
                         if (entry['created_at'] != null)
                           Text(

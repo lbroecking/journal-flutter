@@ -20,7 +20,7 @@ class _AuthPageState extends State<AuthPage> {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      //headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': _userNameController.text,
         'email': _emailController.text,
