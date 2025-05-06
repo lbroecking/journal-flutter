@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'journal_page.dart';
@@ -16,7 +17,8 @@ class _AuthPageState extends State<AuthPage> {
   final _passwordController = TextEditingController();
 
   Future<void> signUp() async {
-    final url = Uri.parse('http://localhost:3000/register'); // GO BACKEND URL
+    final serverUrl = dotenv.env['SERVER_URL_SIGNUP'];
+    final url = Uri.parse(serverUrl!); // check, that serverUrl not null
 
     final response = await http.post(
       url,
@@ -45,7 +47,8 @@ class _AuthPageState extends State<AuthPage> {
   }
 
 Future<void> signIn() async {
-    final url = Uri.parse('http://localhost:3000/login'); // GO BACKEND URL
+  final serverUrl = dotenv.env['SERVER_URL_SIGNIN'];
+    final url = Uri.parse(serverUrl!); // check, that serverUrl not null
 
     final response = await http.post(
       url,

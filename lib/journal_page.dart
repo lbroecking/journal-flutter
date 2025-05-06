@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'auth_page.dart';
 import 'new_personal_entry.dart';
 import 'new_relationship_entry.dart';
@@ -30,8 +31,8 @@ class _JournalPageState extends State<JournalPage> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    //TODO insert delete server request
-    final uri = Uri.parse('http://localhost:3000/logout');
+    final serverUrl = dotenv.env['SERVER_URL_LOGOUT'];
+    final uri = Uri.parse(serverUrl!); // check, that serverUrl not null
     final response = await http.post(uri);
     if (response.statusCode == 200) {
       Navigator.pushReplacement(
@@ -48,24 +49,11 @@ class _JournalPageState extends State<JournalPage> {
   }
 
   Future<void> _fetchEntries() async {
-    //final userId = "dein_user_id"; // Hole User-ID anders! (z.B. via JWT)
-    final uri = Uri.parse('http://localhost:3000/entries?selected_index=$selectedIndex');
+    final serverUrl = dotenv.env['SERVER_URL_ENTRY'];
+    final uri = Uri.parse(
+      '${serverUrl!}/?selected_index=$selectedIndex',
+    ); // check, that serverUrl not null
     final response = await http.get(uri);
-
-    /*
-    final uri = Uri.parse('http://localhost:3000/entries');
-
-    final Map<String, dynamic> body = {
-      //'user_id': userId,
-      'filter': selectedIndex,
-    };
-
-    final response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(body),
-    );
-    */
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -83,7 +71,6 @@ class _JournalPageState extends State<JournalPage> {
     //TODO insert delete server request
 
     String table = '';
-
     switch (selectedIndex) {
       case 0:
         table = 'journal_entries';
@@ -95,9 +82,36 @@ class _JournalPageState extends State<JournalPage> {
         table = 'relationship_check';
         break;
       default:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Error")));
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error occured while deleting process.")),
+        );
+    }
+
+    final serverUrl = dotenv.env['SERVER_URL_DELETE'];
+    final uri = Uri.parse(serverUrl!); // check, that serverUrl not null
+
+    final Map<String, dynamic> body = {
+      'table': table,
+    };
+
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      jsonDecode(response.body);
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Deleted entry")));
+    } else {
+        Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to delete entry")));
     }
   }
 
@@ -687,7 +701,6 @@ class _JournalPageState extends State<JournalPage> {
                             title: Text('Löschen'),
                             onTap: () {
                               _deleteEntry(entry);
-
                               Navigator.pop(context); // Modal schließen
                             },
                           ),

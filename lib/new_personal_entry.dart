@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'utils/emotion_colors.dart';
+import 'package:http/http.dart' as http;
 
 class NewEntryPage extends StatefulWidget {
   const NewEntryPage({super.key});
@@ -11,33 +14,55 @@ class NewEntryPage extends StatefulWidget {
 }
 
 class _NewEntryPageState extends State<NewEntryPage> {
-  final supabase = Supabase.instance.client;
   final _contentController = TextEditingController();
   final _gratefulController = TextEditingController();
   final _proudController = TextEditingController();
 
   String _selectedEmotion = 'neutral';
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  String formattedDateGer = DateFormat(
-      'dd.MM.yyyy',
-    ).format(DateTime.now()); 
+  String formattedDateGer = DateFormat('dd.MM.yyyy').format(DateTime.now());
 
   Future<void> _addEntry() async {
-    final user = supabase.auth.currentUser;
+    final serverUrl = dotenv.env['SERVER_URL_ENTRY'];
+    final uri = Uri.parse(serverUrl!); // check, that serverUrl not null
 
-    if (user != null && _proudController.text.isNotEmpty) {
-      await supabase.from('journal_entries').insert({
-        'user_id': user.id,
-        'content': _contentController.text,
-        'content_grateful': _gratefulController.text,
-        'content_proud': _proudController.text,
-        'created_at': formattedDate,
-        'emotion_color': _selectedEmotion,
-      });
+    final Map<String, dynamic> body = {
+      'content': _contentController.text,
+      'content_grateful': _gratefulController.text,
+      'content_proud': _proudController.text,
+      'created_at': formattedDate,
+      'emotion_color': _selectedEmotion,
+    };
+
+    if (_proudController.text.isNotEmpty) {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        jsonDecode(response.body);
+        _proudController.clear();
+        Navigator.pop(context, _proudController.text.trim());
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Entry insert successful")));
+      } else {
+        Navigator.pop(context, _proudController.text.trim());
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Failed to insert entry")));
+      }
+    } else {
       _proudController.clear();
       Navigator.pop(context, _proudController.text.trim());
-      //_fetchEntries(); // Aktualisiert die Liste der Einträge
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to insert entry")));
     }
+
+    //_fetchEntries(); // Aktualisiert die Liste der Einträge
   }
 
   @override
