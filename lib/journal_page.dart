@@ -82,7 +82,6 @@ class _JournalPageState extends State<JournalPage> {
         table = 'relationship_check';
         break;
       default:
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error occured while deleting process.")),
         );
@@ -91,11 +90,15 @@ class _JournalPageState extends State<JournalPage> {
     final serverUrl = dotenv.env['SERVER_URL_DELETE'];
     final uri = Uri.parse(serverUrl!); // check, that serverUrl not null
 
+    var entryId = entry['id'];
+
     final Map<String, dynamic> body = {
       'table': table,
+      'id': entryId
     };
 
-    final response = await http.post(
+  
+    final response = await http.delete(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(body),
@@ -103,12 +106,11 @@ class _JournalPageState extends State<JournalPage> {
 
     if (response.statusCode == 200) {
       jsonDecode(response.body);
-      Navigator.pop(context);
+      _fetchEntries();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Deleted entry")));
     } else {
-        Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Failed to delete entry")));
